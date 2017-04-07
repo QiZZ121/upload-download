@@ -56,7 +56,7 @@ app.post('/upload',function (req,res) {
     //这里打印可以看到接收到文件的信息。
 
     /*//do something
-     * 成功接受到浏览器传来的文件。我们可以在这里写对文件的一系列操作。例如重命名，修改文件储存路径 。等等。
+     * 成功接受到浏览器传来的文件，我们可以在这里写对文件的一系列操作。例如重命名，修改文件储存路径 。
      *
      *
      * */
@@ -101,6 +101,8 @@ app.post('/upload',function (req,res) {
 });
 //上传结束
 //下载部分开始
+
+
 app.get('/download', function(req, res){
         fs.readdir('/Program Files (x86)/Apache Software Foundation/Apache2.2/htdocs/test', function (err, files) {//读取文件夹下文件
            debugger;
