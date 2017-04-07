@@ -12,7 +12,7 @@ var multiparty=require("multiparty");
 
 
 
-//获取内网i
+//获取内网ip
 var os = require('os');
 
 function getLocalIP() {
