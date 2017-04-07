@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>fileUploadAndDown</title>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+		<link rel="stylesheet" type="text/css" href="css/fileCSS.css"/>
+	</head>
+	<body ng-app="fileApp" >
+		<div class="fillUploadDiv" ng-controller="fileController">
+
+			<div class="form-group">
+			    <label for="exampleInputFile" >File input</label>
+			    <input type="file" id="exampleInputFile" ng-model="file" >
+			</div>
+			<div>
+				<button type="submit" class="btn btn-success" ng-click="uploadFile()">上传</button>
+			</div>
+			<br />
+			<br />
+			<div ng-repeat="item in dates">
+				{{item.name}} <a href = {{item.fileUrl}}  download = {{item.name}} >下载</a>
+			</div>
+		</div>
+	</body>
+	<script src="js/angular.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		angular.module('fileApp',[])
+				.controller('fileController',function($scope,$http){
+                    $http.get("http://192.168.1.122:3000/download")
+                        .success(function(response){
+                            $scope.dates = response;
+                        }).error(function(response){});
+
+                    $scope.uploadFile = function() {
+        				var fd = new FormData();
+        				var file = document.querySelector('input[type=file]').files[0];
+        				fd.append('logo', file);
+        				$http({
+				            method:'POST',
+				            url:"http://192.168.1.122:3000/upload",
+				            data: fd,
+				            headers: {'Content-Type':undefined},
+				            transformRequest: angular.identity 
+				        })   
+				        .success( function ( response )
+				        {
+				                       //上传成功的操作
+				            alert("uplaod success");
+				        }); 
+					}
+    			});
+	</script>
+</html>

@@ -1,0 +1,25 @@
+.fillUploadDiv{
+	margin: 10px;
+	
+}
+.filename{
+ width: 300px;
+ height: 30px;
+ line-height: 30px;
+}
+a{
+ width: 50px;
+ text-align: center;
+ height: 30px;
+ line-height: 30px;
+ position: raletive;
+ cursor: pointer;
+ overflow:hidden;
+ display: inline-block;
+}
+a input{
+ position: absolute:
+ left: 0;
+ top: 0;
+ opacity: 0;
+}
