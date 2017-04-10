@@ -49,7 +49,7 @@ app.all('*', function(req, res, next) {
 });
 
 
-// ,multipartMiddeware
+// ,multipartMiddeware之前用的中间件
 //这是接受form表单请求的接口路径，请求方式为post。上传
 app.post('/upload',function (req,res) {
     //这里打印可以看到接收到文件的信息。
@@ -92,19 +92,48 @@ app.post('/upload',function (req,res) {
             };
         });
 
+        //链接数据库并插入数据
+        var MongoClient = require('mongodb').MongoClient;
+        var DB_CONN_STR = 'mongodb://192.168.1.107:37017/file'; //# 数据库为 runoob
+
+        var insertData = function(db, callback) {
+            //连接到表 site
+            var collection = db.collection('files');
+            //插入数据
+            var data=[{name:originalFilename,url:'http://'+getLocalIP()+':8080/test/'+originalFilename}];
+            collection.insert(data, function(err, result) {
+                if(err)
+                {
+                   console.log('Error:'+ err);
+                    return;//跳出
+                }
+                callback(result);//callback=console.log的作用，只要是一个函数就可以在这里
+            });
+        }
+
+        MongoClient.connect(DB_CONN_STR, function(err, db) {
+            console.log("连接成功！");
+            insertData(db, function(result) {
+                console.log(result);
+                db.close();
+            });
+        });
+        //插入数据结束
+
         res.writeHead(200, {'content-type': 'text/plain'});
         res.end();
     });
 
 
 });
+
 //上传结束
 //下载部分开始
 
 
 app.get('/download', function(req, res){
         fs.readdir('/Program Files (x86)/Apache Software Foundation/Apache2.2/htdocs/test', function (err, files) {//读取文件夹下文件
-           debugger;
+            console.log(files);
             var count = files.length,
                 results =new Array() ;
             //遍历文件夹下的文件
@@ -120,8 +149,53 @@ app.get('/download', function(req, res){
                         res.send(results);
                         res.end();//向客户端传送服务器文件信息（json数据格式）
                     }
+
+
+
                 });
             });
         });
     });
 //下载部分结束
+
+
+
+
+//搜索
+// var MONGO  = require("mongodb"),
+//     server = new MONGO.Server("192.168.1.107",37017),
+//     client = new MONGO.Db('file',server,{safe:true});
+// client.open(function(err){
+//     if(!err){
+//         client.collection('files',function(err,collection){
+//             if(err){
+//                 console.log("collection error");
+//                 client.close();
+//                 return;
+//             }
+//             collection.find(
+//                 {a:{$lt:9,$gte:1,$exists:true}},
+//                 {sort:{a:-1,_id:1},skip:2,limit:3},
+//                 function(err,results){
+//                     if(err){
+//                         client.close();
+//                         console.log("collection find error");
+//                         return;
+//                     }
+//                     results.toArray(function(err,arr){
+//                         client.close();
+//                         if(err){
+//                             console.log("results toArray error");
+//                             return;
+//                         }
+//                         console.log(arr);
+//                         process.exit();
+//                     });
+//                 });
+//         });
+//     }
+//     else
+//     {
+//         console.log("db open error");
+//     }
+// });

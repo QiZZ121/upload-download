@@ -12,14 +12,20 @@
 			<div class="form-group">
 			    <label for="exampleInputFile" >File input</label>
 			    <input type="file" id="exampleInputFile" ng-model="file" >
+				<input type="text" placeholder="搜索你想要的文件" id="txt">
+
 			</div>
 			<div>
+				<button id="btn" type="submit" ng-click="query()" >搜索</button>
 				<button type="submit" class="btn btn-success" ng-click="uploadFile()">上传</button>
 			</div>
 			<br />
 			<br />
 			<div ng-repeat="item in dates">
 				{{item.name}} <a href = {{item.fileUrl}}  download = {{item.name}} >下载</a>
+			</div>
+			<div ng-repeat="item in dat">
+				{{item.name}} 
 			</div>
 		</div>
 	</body>
@@ -31,7 +37,10 @@
                         .success(function(response){
                             $scope.dates = response;
                         }).error(function(response){});
+                    
 
+                    
+                    
                     $scope.uploadFile = function() {
         				var fd = new FormData();
         				var file = document.querySelector('input[type=file]').files[0];
