@@ -10,7 +10,7 @@ var fs = require('fs'),
 //之前用的是connect-multiparty,但是文件重命名有问题所以改用这个库
 var multiparty=require("multiparty");
 
-
+var bodyParser=require("body-parser");
 
 //获取内网ip
 var os = require('os');
@@ -25,7 +25,7 @@ function getLocalIP() {
     }
     return map;
 }
-console.log(getLocalIP());
+
 //获取内网ip结束
 
 
@@ -52,14 +52,6 @@ app.all('*', function(req, res, next) {
 // ,multipartMiddeware之前用的中间件
 //这是接受form表单请求的接口路径，请求方式为post。上传
 app.post('/upload',function (req,res) {
-    //这里打印可以看到接收到文件的信息。
-
-    /*//do something
-     * 成功接受到浏览器传来的文件，我们可以在这里写对文件的一系列操作。例如重命名，修改文件储存路径 。
-     *
-     *
-     * */
-
     var multiparty = require('multiparty');
     var form = new multiparty.Form();
     //设置字符格式
@@ -82,9 +74,6 @@ app.post('/upload',function (req,res) {
         console.log(files);//文件信息
         var originalFilename =files.logo[0]['originalFilename'];
         var path = files.logo[0]['path'];
-
-        console.log(originalFilename);
-        console.log(path);
         //同步重命名文件名
         fs.rename(path, form.uploadDir+originalFilename,function(err){
             if(err){
@@ -94,7 +83,7 @@ app.post('/upload',function (req,res) {
 
         //链接数据库并插入数据
         var MongoClient = require('mongodb').MongoClient;
-        var DB_CONN_STR = 'mongodb://192.168.1.107:37017/file'; //# 数据库为 runoob
+        var DB_CONN_STR = 'mongodb://localhost:37017/file'; //# 数据库为 runoob
 
         var insertData = function(db, callback) {
             //连接到表 site
@@ -133,7 +122,7 @@ app.post('/upload',function (req,res) {
 
 app.get('/download', function(req, res){
         fs.readdir('/Program Files (x86)/Apache Software Foundation/Apache2.2/htdocs/test', function (err, files) {//读取文件夹下文件
-            console.log(files);
+
             var count = files.length,
                 results =new Array() ;
             //遍历文件夹下的文件
@@ -199,3 +188,34 @@ app.get('/download', function(req, res){
 //         console.log("db open error");
 //     }
 // });
+app.use(bodyParser.urlencoded({ extended: true }));
+app.post('/query',function(req, res){
+
+    var user = req.body.user;
+     console.log(user.name);
+    var MongoClient = require('mongodb').MongoClient;
+    var DB_CONN_STR = 'mongodb://192.168.1.107:37017/file';
+
+    var selectData=function (db,callback) {
+        var collection=db.collection('files');
+        var pattern = new RegExp("^.*"+user.name+".*$");
+        var query={'name':pattern};
+        collection.find(query).toArray(function (err,result) {
+            if (err){
+                console.log('Error:'+err);
+                return;
+            }
+            callback(result);
+        });
+    }
+    MongoClient.connect(DB_CONN_STR, function(err, db) {
+
+        selectData(db, function(result) {
+            console.log(result);
+            db.close();
+            res.send(result);
+            res.end();
+        });
+    });
+
+})

@@ -12,22 +12,38 @@
 			<div class="form-group">
 			    <label for="exampleInputFile" >File input</label>
 			    <input type="file" id="exampleInputFile" ng-model="file" >
-				<input type="text" placeholder="搜索你想要的文件" id="txt">
-
+				<input type="text" ng-model="txt">
 			</div>
 			<div>
-				<button id="btn" type="submit" ng-click="query()" >搜索</button>
+
 				<button type="submit" class="btn btn-success" ng-click="uploadFile()">上传</button>
+				<button type="submit" class="btn btn-success" ng-click="query()">搜索</button>
 			</div>
 			<br />
 			<br />
+
 			<div ng-repeat="item in dates">
 				{{item.name}} <a href = {{item.fileUrl}}  download = {{item.name}} >下载</a>
 			</div>
-			<div ng-repeat="item in dat">
-				{{item.name}} 
-			</div>
+
 		</div>
+
+
+		<form action="http://192.168.1.122:3000/query" method = 'post' name="fire">
+			<input type="text" name="user[name]">
+			<input type="submit" value="搜索">
+  		</form>
+	<span id="spa"></span>
+	<!--<script>-->
+		<!--window.onload=function () {-->
+			<!--var txt=document.getElementById("txt");-->
+            <!--var btn=document.getElementById("btn");-->
+            <!--btn.onclick=function (response) {-->
+				<!---->
+            <!--}-->
+        <!--}-->
+		<!---->
+	<!--</script>-->
 	</body>
 	<script src="js/angular.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
@@ -37,14 +53,16 @@
                         .success(function(response){
                             $scope.dates = response;
                         }).error(function(response){});
-                    
+
 
                     
                     
                     $scope.uploadFile = function() {
         				var fd = new FormData();
         				var file = document.querySelector('input[type=file]').files[0];
+                        console.log(file);
         				fd.append('logo', file);
+
         				$http({
 				            method:'POST',
 				            url:"http://192.168.1.122:3000/upload",
@@ -58,6 +76,27 @@
 				            alert("uplaod success");
 				        }); 
 					}
+					//查询
+//                    $scope.query=function () {
+//
+//                        var fd = new FormData();
+//                     var files=
+//
+//                        fd.append('file',files);
+//
+//                        $http({
+//                            method:'post',
+//                            url:"http://192.168.1.122:3000/query",
+//                            data:fd,
+//                            headers: {'Content-Type':undefined},
+//                            transformRequest: angular.identity
+//
+//                        }).success(function(response){
+//                            $scope.dat = response;
+//                        }).error(function(response){
+//                            console.log("error");
+//                        });
+//                    }
     			});
 	</script>
 </html>
